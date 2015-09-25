@@ -19,7 +19,7 @@ module Docx
   #   end
   class Document
     attr_reader :xml, :doc, :zip, :styles
-    
+
     def initialize(path, &block)
       @replace = {}
       @zip = Zip::File.open(path)
@@ -54,6 +54,10 @@ module Docx
       @doc.xpath('//w:document//w:body//w:p').map { |p_node| parse_paragraph_from p_node }
     end
 
+    def lists
+      @doc.xpath('//w:pStyle[@w:val="ListParagraph"]/../..').map { |p_node| parse_paragraph_from p_node }
+    end
+
     def bookmarks
       bkmrks_hsh = Hash.new
       bkmrks_ary = @doc.xpath('//w:bookmarkStart').map { |b_node| parse_bookmark_from b_node }
@@ -82,6 +86,10 @@ module Docx
     #   each_paragraph => Enumerator
     def each_paragraph
       paragraphs.each { |p| yield(p) }
+    end
+
+    def each_list
+      lists.each { |p| yield(p) }
     end
 
     # call-seq:
@@ -134,6 +142,10 @@ module Docx
     # generate Elements::Containers::Paragraph from paragraph XML node
     def parse_paragraph_from(p_node)
       Elements::Containers::Paragraph.new(p_node, document_properties)
+    end
+
+    def parse_list_from(p_node)
+      Elements::Containers::List.new(p_node, document_properties)
     end
 
     # generate Elements::Bookmark from bookmark XML node

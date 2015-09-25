@@ -15,6 +15,7 @@ describe Docx::Document do
 
     it 'should read the document' do
       expect(@doc.paragraphs.size).to eq(2)
+
       expect(@doc.paragraphs.first.text).to eq('hello')
       expect(@doc.paragraphs.last.text).to eq('world')
       expect(@doc.text).to eq("hello\nworld")
@@ -33,6 +34,34 @@ describe Docx::Document do
 
     it 'should have properly formatted text runs' do
       @doc.each_paragraph do |p|
+        p.each_text_run do |tr|
+          expect(tr).to be_an_instance_of(Docx::Elements::Containers::TextRun)
+          expect(tr.formatting).to eq(Docx::Elements::Containers::TextRun::DEFAULT_FORMATTING)
+        end
+      end
+    end
+  end
+
+   describe 'reading lists' do
+    before do
+      @doc = Docx::Document.open(@fixtures_path + '/list.docx')
+    end
+
+    it 'should read the document' do
+      expect(@doc.lists.size).to eq(3)
+      @doc.lists.each_with_index do |item, index|
+        expect(item.text).to eql("list #{index + 1}")
+      end
+    end
+
+    it 'should have list' do
+      @doc.each_list do |p|
+        expect(p).to be_an_instance_of(Docx::Elements::Containers::Paragraph)
+      end
+    end
+
+    it 'should have properly formatted text runs' do
+      @doc.each_list do |p|
         p.each_text_run do |tr|
           expect(tr).to be_an_instance_of(Docx::Elements::Containers::TextRun)
           expect(tr.formatting).to eq(Docx::Elements::Containers::TextRun::DEFAULT_FORMATTING)
@@ -225,12 +254,12 @@ describe Docx::Document do
       expect(@doc.paragraphs[5].text_runs[0].italicized?).to eq(false)
       expect(@doc.paragraphs[5].text_runs[0].bolded?).to eq(false)
       expect(@doc.paragraphs[5].text_runs[0].underlined?).to eq(false)
-      
+
       expect(@formatting[5][1]).to eq(@all_formatted)
       expect(@doc.paragraphs[5].text_runs[1].italicized?).to eq(true)
       expect(@doc.paragraphs[5].text_runs[1].bolded?).to eq(true)
       expect(@doc.paragraphs[5].text_runs[1].underlined?).to eq(true)
-      
+
       expect(@formatting[5][2]).to eq(@default_formatting)
       expect(@doc.paragraphs[5].text_runs[2].italicized?).to eq(false)
       expect(@doc.paragraphs[5].text_runs[2].bolded?).to eq(false)
@@ -327,7 +356,7 @@ describe Docx::Document do
       expect(scan.last).to eq('</p>')
       expect(scan[1]).to eq('Normal')
     end
-   
+
     it 'should emphasize italicized text' do
       scan = @doc.paragraphs[1].to_html.scan(@em_regex).flatten
       expect(scan.first).to eq('<em')
@@ -355,7 +384,7 @@ describe Docx::Document do
     end
 
     it "should set font size on styled paragraphs" do
-      regex = /(\<p{1})[^\>]+style\=\"([^\"]+).+(<\/p>)/      
+      regex = /(\<p{1})[^\>]+style\=\"([^\"]+).+(<\/p>)/
       scan = @doc.paragraphs[9].to_html.scan(regex).flatten
       expect(scan.first).to eq '<p'
       expect(scan.last).to eq '</p>'
