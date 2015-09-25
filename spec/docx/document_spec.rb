@@ -49,8 +49,13 @@ describe Docx::Document do
 
     it 'should read the document' do
       expect(@doc.lists.size).to eq(3)
+
       @doc.lists.each_with_index do |item, index|
         expect(item.text).to eql("list #{index + 1}")
+      end
+
+      @doc.paragraphs.each_with_index do |item, index|
+        expect(item.text).not_to eql("list #{index}")
       end
     end
 

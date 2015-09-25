@@ -51,7 +51,7 @@ module Docx
     end
 
     def paragraphs
-      @doc.xpath('//w:document//w:body//w:p').map { |p_node| parse_paragraph_from p_node }
+      @doc.xpath('//w:document//w:body//w:p').map { |p_node| parse_paragraph_from p_node }.compact
     end
 
     def lists
@@ -141,6 +141,7 @@ module Docx
 
     # generate Elements::Containers::Paragraph from paragraph XML node
     def parse_paragraph_from(p_node)
+      return if p_node.xpath('.//w:pStyle[@w:val="ListParagraph"]').count > 0
       Elements::Containers::Paragraph.new(p_node, document_properties)
     end
 
