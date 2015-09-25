@@ -56,7 +56,7 @@ describe Docx::Document do
 
     it 'should have list' do
       @doc.each_list do |p|
-        expect(p).to be_an_instance_of(Docx::Elements::Containers::Paragraph)
+        expect(p).to be_an_instance_of(Docx::Elements::Containers::List)
       end
     end
 

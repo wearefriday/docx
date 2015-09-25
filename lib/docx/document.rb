@@ -55,7 +55,7 @@ module Docx
     end
 
     def lists
-      @doc.xpath('//w:pStyle[@w:val="ListParagraph"]/../..').map { |p_node| parse_paragraph_from p_node }
+      @doc.xpath('//w:pStyle[@w:val="ListParagraph"]/../..').map { |p_node| parse_list_from p_node }
     end
 
     def bookmarks
