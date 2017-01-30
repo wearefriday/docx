@@ -6,9 +6,9 @@ A ruby library/gem for interacting with `.docx` files. currently capabilities in
 
 ### Install
 
-Requires ruby (tested with 2.1.1)
+Requires ruby (tested with 2.4.0)
 
-    gem 'docx', '~> 0.2.07', :require => ["docx"]
+    gem "docx", git: "https://github.com/wearefriday/docx"
 
 ### Reading
 
@@ -61,12 +61,28 @@ doc.tables.each do |table|
       puts cell.text
     end
   end
-  
+
   table.columns.each do |column| # Column-based iteration
     column.cells.each do |cell|
       puts cell.text
     end
   end
+end
+```
+
+### Reading lists
+
+``` ruby
+require 'docx'
+
+doc = Docx::Document.open('paragraphs_with_lists.docx')
+
+# Iterate through just the list items in the document
+doc.lists
+
+# Iterate through both paragraphs and lists
+doc.paragraphs_including_lists.each do |item|
+  puts item.class # returns Docx::Elements::Containers::Paragraph or Docx::Elements::Containers::List
 end
 ```
 

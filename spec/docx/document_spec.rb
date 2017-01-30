@@ -75,6 +75,26 @@ describe Docx::Document do
     end
   end
 
+  describe 'reading paragraphs that include lists' do
+    before do
+      @doc = Docx::Document.open(@fixtures_path + '/paragraphs_with_lists.docx')
+    end
+
+    it 'should read the paragraphs including the ones that contain lists' do
+      expect(@doc.paragraphs_including_lists.count).to eq 10
+    end
+
+    it 'should have non-list paragraphs with the correct class (Docx::Elements::Containers::Paragraph)' do
+      expect(@doc.paragraphs_including_lists.first.class).to eq Docx::Elements::Containers::Paragraph
+      expect(@doc.paragraphs_including_lists[1].class).to eq Docx::Elements::Containers::Paragraph
+      expect(@doc.paragraphs_including_lists[2].class).to eq Docx::Elements::Containers::Paragraph
+    end
+
+    it 'should have list paragraphs with the correct class (Docx::Elements::Containers::List)' do
+      expect(@doc.paragraphs_including_lists[3].class).to eq Docx::Elements::Containers::List
+    end
+  end
+
   describe 'read tables' do
     before do
       @doc = Docx::Document.open(@fixtures_path + '/tables.docx')

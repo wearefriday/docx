@@ -58,6 +58,10 @@ module Docx
       @doc.xpath('//w:pStyle[@w:val="ListParagraph"]/../..').map { |p_node| parse_list_from p_node }
     end
 
+    def paragraphs_including_lists
+      @doc.xpath('//w:document//w:body//w:p').map { |p_node| parse_paragraph_from(p_node) || parse_list_from(p_node) }.compact
+    end
+
     def bookmarks
       bkmrks_hsh = Hash.new
       bkmrks_ary = @doc.xpath('//w:bookmarkStart').map { |b_node| parse_bookmark_from b_node }
